@@ -4,11 +4,31 @@ let colorThief = null;
 let logoImage = null;
 let gradientColors = ['#667eea', '#764ba2'];
 
-// Initialize Color Thief
-window.onload = function() {
-    colorThief = new ColorThief();
+// Initialize Application
+window.addEventListener('DOMContentLoaded', function() {
+    // Wait for external libraries to load
+    if (typeof ColorThief !== 'undefined') {
+        colorThief = new ColorThief();
+    } else {
+        console.error('ColorThief library not loaded');
+        showToast('Color extraction library not available');
+    }
+    
     updateGradientPreview();
-};
+});
+
+// Fallback: Check if libraries are loaded periodically
+function checkLibrariesLoaded() {
+    if (typeof ColorThief === 'undefined') {
+        console.warn('Waiting for ColorThief library...');
+        setTimeout(checkLibrariesLoaded, 500);
+    }
+    if (typeof QRCode === 'undefined') {
+        console.warn('Waiting for QRCode library...');
+        setTimeout(checkLibrariesLoaded, 500);
+    }
+}
+checkLibrariesLoaded();
 
 // Tab Navigation
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -81,7 +101,16 @@ document.getElementById('colorCount').addEventListener('input', (e) => {
 
 // Extract Colors
 extractBtn.addEventListener('click', () => {
-    if (currentImage && colorThief) {
+    if (currentImage) {
+        if (typeof ColorThief === 'undefined' || !colorThief) {
+            if (typeof ColorThief !== 'undefined') {
+                colorThief = new ColorThief();
+            } else {
+                showToast('Color extraction library not loaded. Please refresh the page.');
+                return;
+            }
+        }
+        
         const colorCount = parseInt(document.getElementById('colorCount').value);
         const palette = colorThief.getPalette(currentImage, colorCount);
         displayPalette(palette, 'paletteGrid');
@@ -471,6 +500,11 @@ END:VCARD`;
     
     const canvas = document.getElementById('qrCanvas');
     
+    if (typeof QRCode === 'undefined') {
+        showToast('QR code library not loaded. Please refresh the page.');
+        return;
+    }
+    
     const options = {
         width: size,
         margin: 2,
@@ -623,6 +657,11 @@ function downloadQR(format) {
         const type = document.getElementById('qrType').value;
         let qrData = '';
         
+        if (typeof QRCode === 'undefined') {
+            showToast('QR code library not loaded. Please refresh the page.');
+            return;
+        }
+        
         switch (type) {
             case 'url':
                 qrData = document.getElementById('urlValue').value;
@@ -742,6 +781,11 @@ function generateBatchQRCodes() {
     const batchGrid = document.getElementById('batchGrid');
     batchGrid.innerHTML = '';
     
+    if (typeof QRCode === 'undefined') {
+        showToast('QR code library not loaded. Please refresh the page.');
+        return;
+    }
+    
     window.batchQRData.forEach((item, index) => {
         const canvas = document.createElement('canvas');
         canvas.id = `batch-qr-${index}`;
@@ -791,6 +835,11 @@ function downloadCSV(content, filename) {
 }
 
 function downloadAllQR() {
+    if (typeof JSZip === 'undefined') {
+        showToast('JSZip library not loaded. Please refresh the page.');
+        return;
+    }
+    
     const zip = new JSZip();
     const size = parseInt(document.getElementById('batchQRSize').value);
     const color = document.getElementById('batchQRColor').value;

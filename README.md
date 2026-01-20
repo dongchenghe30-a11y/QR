@@ -1,6 +1,6 @@
-# Free Color Palette Generator & Extractor
+# Free QR Code Generator - Custom with Logo, Colors & Art Designs
 
-A comprehensive web application for extracting colors from images, generating color palettes, and creating beautiful, customizable QR codes.
+A comprehensive web application for creating beautiful custom QR codes with logos, colors, and artistic designs, along with color extraction and palette generation tools.
 
 ## Features
 
