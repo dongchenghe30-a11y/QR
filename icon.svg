@@ -1,0 +1,38 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient3" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background -->
+  <rect width="512" height="512" rx="96" fill="white"/>
+  
+  <!-- Color palette design -->
+  <rect x="56" y="56" width="400" height="200" rx="24" fill="url(#gradient1)"/>
+  <rect x="56" y="276" width="120" height="180" rx="24" fill="url(#gradient2)"/>
+  <rect x="196" y="276" width="120" height="180" rx="24" fill="#10b981"/>
+  <rect x="336" y="276" width="120" height="180" rx="24" fill="url(#gradient3)"/>
+  
+  <!-- Dropper icon overlay -->
+  <path d="M356 36L476 156L436 196L316 76L356 36Z" fill="white" stroke="#1f2937" stroke-width="8"/>
+  <path d="M396 96L436 56L476 96L436 136L396 96Z" fill="#1f2937"/>
+  <path d="M376 116L316 176L276 196L296 156L356 96L376 116Z" fill="#1f2937"/>
+  <circle cx="396" cy="116" r="12" fill="white"/>
+  
+  <!-- Highlight dots -->
+  <circle cx="106" cy="106" r="8" fill="white" opacity="0.3"/>
+  <circle cx="406" cy="106" r="8" fill="white" opacity="0.3"/>
+  <circle cx="256" cy="156" r="8" fill="white" opacity="0.3"/>
+  <circle cx="406" cy="206" r="8" fill="white" opacity="0.3"/>
+</svg>
