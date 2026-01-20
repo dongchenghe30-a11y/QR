@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Color Palette Generator & Extractor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎨 Free Color Palette Generator & Extractor</h1>
+            <p class="subtitle">Extract colors, create palettes, and generate beautiful QR codes</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="extract">Extract Colors</button>
+            <button class="tab-btn" data-tab="palette">Generate Palette</button>
+            <button class="tab-btn" data-tab="qrcode">QR Code Generator</button>
+            <button class="tab-btn" data-tab="batch">Batch Processing</button>
+        </nav>
+
+        <!-- Extract Colors Tab -->
+        <section id="extract-tab" class="tab-content active">
+            <div class="card">
+                <h2>Extract Colors from Image</h2>
+                <div class="upload-area" id="imageUpload">
+                    <div class="upload-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p>Click or drag & drop an image here</p>
+                        <p class="upload-hint">Supports JPG, PNG, WebP</p>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" hidden>
+                </div>
+                
+                <div class="preview-container" id="imagePreview" style="display: none;">
+                    <img id="previewImg" src="" alt="Uploaded image">
+                </div>
+
+                <div class="controls">
+                    <label>
+                        <span>Number of Colors:</span>
+                        <input type="range" id="colorCount" min="3" max="20" value="8">
+                        <span id="colorCountValue">8</span>
+                    </label>
+                </div>
+
+                <button id="extractBtn" class="btn btn-primary" disabled>Extract Colors</button>
+
+                <div class="palette-display" id="extractedPalette" style="display: none;">
+                    <h3>Extracted Palette</h3>
+                    <div class="palette-grid" id="paletteGrid"></div>
+                    <button id="exportPaletteBtn" class="btn btn-secondary">Export Palette (CSV)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate Palette Tab -->
+        <section id="palette-tab" class="tab-content">
+            <div class="card">
+                <h2>Generate Color Palette</h2>
+                
+                <div class="palette-generation-methods">
+                    <div class="method-selector">
+                        <label>Generation Method:</label>
+                        <select id="paletteMethod">
+                            <option value="complementary">Complementary</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="split-complementary">Split Complementary</option>
+                            <option value="tetradic">Tetradic</option>
+                            <option value="monochromatic">Monochromatic</option>
+                        </select>
+                    </div>
+
+                    <div class="color-picker-container">
+                        <label>Base Color:</label>
+                        <input type="color" id="baseColor" value="#3498db">
+                        <span id="baseColorHex">#3498db</span>
+                    </div>
+
+                    <div class="controls">
+                        <label>
+                            <span>Number of Colors:</span>
+                            <input type="range" id="genColorCount" min="3" max="12" value="5">
+                            <span id="genColorCountValue">5</span>
+                        </label>
+                    </div>
+
+                    <button id="generatePaletteBtn" class="btn btn-primary">Generate Palette</button>
+
+                    <div class="generated-palette" id="generatedPaletteDisplay" style="display: none;">
+                        <h3>Generated Palette</h3>
+                        <div class="palette-grid" id="generatedPaletteGrid"></div>
+                        <div class="palette-actions">
+                            <button class="btn btn-secondary" onclick="randomizeColors()">Randomize</button>
+                            <button class="btn btn-secondary" onclick="exportPalette('generated')">Export (CSV)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gradient Builder -->
+                <div class="gradient-builder">
+                    <h3>Gradient Builder</h3>
+                    <div class="gradient-preview" id="gradientPreview"></div>
+                    <div class="gradient-colors" id="gradientColors">
+                        <input type="color" value="#667eea">
+                        <input type="color" value="#764ba2">
+                    </div>
+                    <div class="gradient-controls">
+                        <select id="gradientDirection">
+                            <option value="to right">Horizontal</option>
+                            <option value="to bottom">Vertical</option>
+                            <option value="to bottom right">Diagonal</option>
+                            <option value="circle">Radial</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="addGradientColor()">+ Add Color</button>
+                        <button class="btn btn-primary" onclick="applyGradient()">Apply</button>
+                    </div>
+                    <div class="gradient-code">
+                        <code id="gradientCode">background: linear-gradient(to right, #667eea, #764ba2);</code>
+                        <button class="btn-copy" onclick="copyGradientCode()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QR Code Generator Tab -->
+        <section id="qrcode-tab" class="tab-content">
+            <div class="card">
+                <h2>QR Code Generator</h2>
+                
+                <div class="qr-type-selector">
+                    <label>QR Code Type:</label>
+                    <select id="qrType">
+                        <option value="url">URL</option>
+                        <option value="text">Plain Text</option>
+                        <option value="contact">Contact Card (vCard)</option>
+                        <option value="wifi">WiFi Network</option>
+                    </select>
+                </div>
+
+                <div class="qr-input-container">
+                    <div id="qrUrlInput" class="qr-input active">
+                        <label>Enter URL:</label>
+                        <input type="url" id="urlValue" placeholder="https://example.com">
+                    </div>
+
+                    <div id="qrTextInput" class="qr-input">
+                        <label>Enter Text:</label>
+                        <textarea id="textValue" rows="4" placeholder="Enter your text here..."></textarea>
+                    </div>
+
+                    <div id="qrContactInput" class="qr-input">
+                        <h3>Contact Information</h3>
+                        <input type="text" id="contactName" placeholder="Full Name">
+                        <input type="tel" id="contactPhone" placeholder="Phone Number">
+                        <input type="email" id="contactEmail" placeholder="Email Address">
+                        <input type="text" id="contactOrg" placeholder="Organization">
+                        <input type="text" id="contactAddress" placeholder="Address">
+                    </div>
+
+                    <div id="qrWifiInput" class="qr-input">
+                        <h3>WiFi Network Details</h3>
+                        <input type="text" id="wifiSSID" placeholder="Network Name (SSID)">
+                        <input type="password" id="wifiPassword" placeholder="Password">
+                        <select id="wifiSecurity">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">No Password</option>
+                        </select>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="wifiHidden">
+                            Hidden Network
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Branding Options -->
+                <div class="branding-section">
+                    <h3>Branding Options</h3>
+                    <div class="branding-controls">
+                        <div class="logo-upload">
+                            <label>Upload Logo:</label>
+                            <div class="upload-small" id="logoUpload">
+                                <input type="file" id="logoInput" accept="image/*" hidden>
+                                <span class="upload-text">Choose Logo</span>
+                            </div>
+                            <div id="logoPreview" style="display: none;">
+                                <img id="logoImg" src="" alt="Logo">
+                                <button class="btn-remove" onclick="removeLogo()">Remove</button>
+                            </div>
+                        </div>
+
+                        <div class="color-settings">
+                            <label>QR Code Color:</label>
+                            <input type="color" id="qrColor" value="#000000">
+                            
+                            <label>Background Color:</label>
+                            <input type="color" id="qrBgColor" value="#ffffff">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Artistic QR Code Options -->
+                <div class="artistic-section">
+                    <h3>AI Artistic QR Code</h3>
+                    <div class="artistic-controls">
+                        <label>
+                            <input type="checkbox" id="artisticMode">
+                            Enable Artistic Mode
+                        </label>
+                        <div id="artisticOptions" style="display: none;">
+                            <label>Background Pattern:</label>
+                            <select id="bgPattern">
+                                <option value="none">None</option>
+                                <option value="geometric">Geometric</option>
+                                <option value="waves">Waves</option>
+                                <option value="dots">Dots</option>
+                                <option value="gradient">Gradient</option>
+                            </select>
+                            <label>Pattern Color:</label>
+                            <input type="color" id="patternColor" value="#667eea">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-size-control">
+                    <label>
+                        <span>QR Code Size:</span>
+                        <input type="range" id="qrSize" min="128" max="1024" value="512" step="64">
+                        <span id="qrSizeValue">512px</span>
+                    </label>
+                </div>
+
+                <button id="generateQRBtn" class="btn btn-primary">Generate QR Code</button>
+
+                <div class="qr-result" id="qrResult" style="display: none;">
+                    <div class="qr-canvas-container">
+                        <canvas id="qrCanvas"></canvas>
+                    </div>
+                    <div class="qr-export">
+                        <button class="btn btn-secondary" onclick="downloadQR('png')">Download PNG</button>
+                        <button class="btn btn-secondary" onclick="downloadQR('svg')">Download SVG</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Batch Processing Tab -->
+        <section id="batch-tab" class="tab-content">
+            <div class="card">
+                <h2>Batch QR Code Generation</h2>
+                <p class="info">Upload a CSV file to generate multiple QR codes at once. Perfect for events, exhibitions, and campaigns.</p>
+                
+                <div class="upload-area" id="csvUpload">
+                    <div class="upload-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        <p>Click or drag & drop a CSV file here</p>
+                        <p class="upload-hint">Download template below</p>
+                    </div>
+                    <input type="file" id="csvInput" accept=".csv" hidden>
+                </div>
+
+                <div class="batch-actions">
+                    <button class="btn btn-secondary" onclick="downloadTemplate()">Download CSV Template</button>
+                    <button id="processBatchBtn" class="btn btn-primary" disabled>Process Batch</button>
+                </div>
+
+                <div class="batch-options">
+                    <h3>Batch Settings</h3>
+                    <label>
+                        <span>QR Code Size:</span>
+                        <input type="range" id="batchQRSize" min="128" max="512" value="256" step="64">
+                        <span id="batchQRSizeValue">256px</span>
+                    </label>
+                    <label>
+                        <span>QR Code Color:</span>
+                        <input type="color" id="batchQRColor" value="#000000">
+                    </label>
+                </div>
+
+                <div class="batch-results" id="batchResults" style="display: none;">
+                    <h3>Generated QR Codes</h3>
+                    <div id="batchGrid"></div>
+                    <button class="btn btn-primary" onclick="downloadAllQR()">Download All (ZIP)</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Free Color Palette Generator & Extractor. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/color-thief@2.3.0/dist/color-thief.umd.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Cloudflare Pages Redirects Configuration
+# Format: from URL to URL [code]
+
+# Home page
+/ /index.html 200
+
+# Optional: Custom redirects
+# /old-page /new-page 301
