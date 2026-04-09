@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="shortcut icon" href="favicon.svg">
+<title>Free Color Palette Generator & Extractor - Get Colors from Image Online, Schemes & Tools</title>
+<meta name="description" content="Free online color palette generator. Extract colors from images, generate complementary/analogous/triadic color schemes, export CSS/SCSS/JSON, check WCAG contrast ratio, and preview in real mockups. Perfect for designers and developers.">
+<meta name="keywords" content="color palette generator, color extractor, extract colors from image, color scheme generator, complementary colors, analogous colors, CSS color palette, WCAG contrast checker, color tools online, free color palette">
+<meta property="og:title" content="Free Color Palette Generator & Extractor">
+<meta property="og:description" content="Extract colors from images & generate beautiful color schemes. Export CSS/SCSS/JSON. Check WCAG contrast. Free online tool.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yoursite.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-text">ColorPalette<span class="logo-accent">.tools</span></span>
+      </div>
+      <nav class="main-nav">
+        <button class="nav-btn active" data-tool="extractor">Extract</button>
+        <button class="nav-btn" data-tool="generator">Generator</button>
+        <button class="nav-btn" data-tool="contrast">Contrast</button>
+        <button class="nav-btn" data-tool="preview">Preview</button>
+        <button class="nav-btn" data-tool="picker">Converter</button>
+        <button class="nav-btn" data-tool="guide">Guide</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="mainContent">
+  <!-- Extractor Tool -->
+  <section id="extractor" class="tool-section tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>Extract Colors from Image</h2>
+        <p>Upload a photo, logo, or inspiration image to instantly pull out the top 10 dominant colors using our Median Cut algorithm.</p>
+      </div>
+
+      <div class="extractor-layout">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-inner">
+            <p class="upload-title">Drop image here or click to upload</p>
+            <p class="upload-hint">Supports JPG, PNG, GIF, WebP. Max 10MB</p>
+            <input type="file" id="imageInput" accept="image/*" hidden>
+            <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+            <button class="btn btn-outline" id="sampleBtn">Try Sample Image</button>
+          </div>
+        </div>
+
+        <div class="extractor-result" id="extractorResult" style="display:none">
+          <div class="image-preview-wrap">
+            <canvas id="imageCanvas"></canvas>
+          </div>
+          <div class="palette-result">
+            <div class="palette-controls">
+              <label>Colors to extract:
+                <select id="colorCount">
+                  <option value="5">5 colors</option>
+                  <option value="8">8 colors</option>
+                  <option value="10" selected>10 colors</option>
+                  <option value="12">12 colors</option>
+                </select>
+              </label>
+              <button class="btn btn-sm btn-primary" id="reExtractBtn">Re-extract</button>
+            </div>
+            <div class="extracted-palette" id="extractedPalette"></div>
+            <div class="palette-actions">
+              <button class="btn btn-outline btn-sm" id="copyAllHex">Copy All HEX</button>
+              <button class="btn btn-outline btn-sm" id="sendToGenerator">Send to Generator</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eyedropper-hint" id="eyedropperHint" style="display:none">
+        <p>Click on the image to pick any specific color</p>
+        <div id="pickedColor" class="picked-color-display"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Generator Tool -->
+  <section id="generator" class="tool-section alt-bg tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>Color Scheme Generator</h2>
+        <p>Pick a base color and instantly generate five types of harmonious color schemes used by professional designers.</p>
+      </div>
+
+      <div class="generator-layout">
+        <div class="generator-controls">
+          <div class="base-color-picker">
+            <label>Base Color</label>
+            <div class="color-input-row">
+              <input type="color" id="baseColorPicker" value="#3B82F6">
+              <input type="text" id="baseColorHex" value="#3B82F6" maxlength="7" class="hex-input">
+            </div>
+          </div>
+
+          <div class="scheme-type-selector">
+            <label>Scheme Type</label>
+            <div class="scheme-buttons">
+              <button class="scheme-btn active" data-scheme="complementary">Complementary</button>
+              <button class="scheme-btn" data-scheme="analogous">Analogous</button>
+              <button class="scheme-btn" data-scheme="triadic">Triadic</button>
+              <button class="scheme-btn" data-scheme="split-complementary">Split Comp.</button>
+              <button class="scheme-btn" data-scheme="tetradic">Tetradic</button>
+              <button class="scheme-btn" data-scheme="monochromatic">Monochromatic</button>
+            </div>
+          </div>
+
+          <div class="scheme-description" id="schemeDescription"></div>
+        </div>
+
+        <div class="scheme-output">
+          <div class="scheme-palette" id="schemePalette"></div>
+          <div class="color-wheel-wrap">
+            <canvas id="colorWheel" width="200" height="200"></canvas>
+            <p class="wheel-hint">Color relationships visualized</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-panel">
+        <h3>Export Your Palette</h3>
+        <div class="export-tabs">
+          <button class="export-tab active" data-format="css">CSS Variables</button>
+          <button class="export-tab" data-format="scss">SCSS Variables</button>
+          <button class="export-tab" data-format="json">JSON</button>
+          <button class="export-tab" data-format="tailwind">Tailwind Config</button>
+        </div>
+        <div class="export-code-wrap">
+          <pre class="export-code" id="exportCode"></pre>
+          <button class="copy-btn" id="copyExportBtn">Copy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contrast Tool -->
+  <section id="contrast" class="tool-section tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>WCAG Contrast Ratio Checker</h2>
+        <p>Ensure your text is readable for all users. Check foreground / background color contrast against WCAG 2.1 AA and AAA standards.</p>
+      </div>
+
+      <div class="contrast-layout">
+        <div class="contrast-inputs">
+          <div class="contrast-color-pick">
+            <label>Text Color (Foreground)</label>
+            <div class="color-input-row">
+              <input type="color" id="fgColor" value="#1E293B">
+              <input type="text" id="fgHex" value="#1E293B" maxlength="7" class="hex-input">
+            </div>
+          </div>
+          <div class="contrast-color-pick">
+            <label>Background Color</label>
+            <div class="color-input-row">
+              <input type="color" id="bgColor" value="#F8FAFC">
+              <input type="text" id="bgHex" value="#F8FAFC" maxlength="7" class="hex-input">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="checkContrastBtn">Check Contrast</button>
+        </div>
+
+        <div class="contrast-result" id="contrastResult">
+          <div class="contrast-preview" id="contrastPreview">
+            <p class="preview-large" id="previewLargeText">Large Text Sample (18pt+)</p>
+            <p class="preview-normal" id="previewNormalText">Normal body text (14pt) — this is how your content looks with these colors applied to a real design.</p>
+            <p class="preview-small" id="previewSmallText">Small text / captions (11pt)</p>
+          </div>
+          <div class="contrast-score-panel">
+            <div class="ratio-display" id="ratioDisplay">
+              <span class="ratio-num" id="ratioNum">—</span>
+              <span class="ratio-label">Contrast Ratio</span>
+            </div>
+            <div class="wcag-levels" id="wcagLevels">
+              <div class="wcag-row" id="wcagAANormal"><span class="level-name">AA Normal</span><span class="level-badge">—</span><span class="level-req">≥ 4.5:1</span></div>
+              <div class="wcag-row" id="wcagAALarge"><span class="level-name">AA Large</span><span class="level-badge">—</span><span class="level-req">≥ 3:1</span></div>
+              <div class="wcag-row" id="wcagAAANormal"><span class="level-name">AAA Normal</span><span class="level-badge">—</span><span class="level-req">≥ 7:1</span></div>
+              <div class="wcag-row" id="wcagAAALarge"><span class="level-name">AAA Large</span><span class="level-badge">—</span><span class="level-req">≥ 4.5:1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accessible-suggestions" id="accessibleSuggestions" style="display:none">
+        <h4>Suggested Accessible Alternatives</h4>
+        <div class="suggestion-list" id="suggestionList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview Tool -->
+  <section id="preview" class="tool-section alt-bg tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>Live UI Preview</h2>
+        <p>See your color palette applied to real web and app UI components before you commit to it.</p>
+      </div>
+
+      <div class="preview-layout">
+        <div class="preview-controls">
+          <h4>Your Active Palette</h4>
+          <div class="active-palette-swatches" id="previewPaletteSwatches"></div>
+          <div class="preview-role-assign">
+            <label>Primary: <input type="color" id="previewPrimary" value="#3B82F6"></label>
+            <label>Secondary: <input type="color" id="previewSecondary" value="#8B5CF6"></label>
+            <label>Accent: <input type="color" id="previewAccent" value="#10B981"></label>
+            <label>Background: <input type="color" id="previewBg" value="#F8FAFC"></label>
+            <label>Text: <input type="color" id="previewText" value="#1E293B"></label>
+          </div>
+          <button class="btn btn-primary" id="applyPreviewBtn">Apply to Preview</button>
+        </div>
+        <div class="mockup-tabs">
+          <div class="tab-bar">
+            <button class="tab-btn active" data-tab="web">Web Page</button>
+            <button class="tab-btn" data-tab="app">Mobile App</button>
+            <button class="tab-btn" data-tab="card">UI Cards</button>
+          </div>
+          <div class="mockup-frame" id="mockupFrame"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Converter Tool -->
+  <section id="picker" class="tool-section tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>Color Converter & Inspector</h2>
+        <p>Convert any color between HEX, RGB, HSL, HSV, and CMYK instantly. See color properties at a glance.</p>
+      </div>
+      <div class="converter-layout">
+        <div class="converter-swatch-wrap">
+          <div class="big-swatch" id="converterSwatch"></div>
+          <input type="color" id="converterPicker" value="#3B82F6">
+        </div>
+        <div class="converter-fields">
+          <div class="field-row"><label>HEX</label><input type="text" id="convHex" value="#3B82F6"></div>
+          <div class="field-row"><label>RGB</label><input type="text" id="convRgb" value="rgb(59, 130, 246)" readonly></div>
+          <div class="field-row"><label>HSL</label><input type="text" id="convHsl" value="hsl(217, 91%, 60%)" readonly></div>
+          <div class="field-row"><label>HSV</label><input type="text" id="convHsv" value="hsv(217, 76%, 96%)" readonly></div>
+          <div class="field-row"><label>CMYK</label><input type="text" id="convCmyk" value="cmyk(76%, 47%, 0%, 4%)" readonly></div>
+        </div>
+        <div class="color-info-panel" id="colorInfoPanel">
+          <div class="info-item"><span class="info-label">Luminance</span><span id="infoLuminance">—</span></div>
+          <div class="info-item"><span class="info-label">Perceived Brightness</span><span id="infoBrightness">—</span></div>
+          <div class="info-item"><span class="info-label">Best text on this bg</span><span id="infoTextColor">—</span></div>
+          <div class="info-item"><span class="info-label">CSS Name</span><span id="infoCssName">—</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guide Tool -->
+  <section id="guide" class="tool-section alt-bg tool-view">
+    <div class="container">
+      <div class="section-header">
+        <h2>How Our Color Palette Tool Works — The Science Behind the Colors</h2>
+      </div>
+      <div class="guide-grid">
+        <article class="guide-card">
+          <h3>Median Cut Algorithm for Image Color Extraction</h3>
+          <p>When you upload an image, our tool samples every pixel and organizes them in a 3D RGB color space. We then apply the <strong>Median Cut algorithm</strong>: the color space is iteratively divided into sub-boxes along the longest dimension, until we have the desired number of boxes. The average color of each box becomes one palette color. This method produces perceptually distinct colors that truly represent your image — far more accurate than simple pixel frequency counting.</p>
+          <p>For even better results, we apply a <strong>quantization refinement pass</strong> that nudges colors apart in HSL space, ensuring the extracted palette is both representative and visually distinct.</p>
+        </article>
+        <article class="guide-card">
+          <h3>Color Harmony Theory & Scheme Generation</h3>
+          <p>All color scheme generation is rooted in classical color theory, operating in <strong>HSL (Hue-Saturation-Lightness)</strong> space for perceptually accurate rotations:</p>
+          <ul>
+            <li><strong>Complementary:</strong> Hue + 180° — maximum contrast, bold & energetic</li>
+            <li><strong>Analogous:</strong> Hue ±30° — naturally harmonious, low-tension combinations</li>
+            <li><strong>Triadic:</strong> Hue, +120°, +240° — vibrant, balanced tension</li>
+            <li><strong>Split-Complementary:</strong> Hue, +150°, +210° — high contrast but less jarring than complementary</li>
+            <li><strong>Tetradic / Square:</strong> Hue, +90°, +180°, +270° — rich palette, requires careful balance</li>
+            <li><strong>Monochromatic:</strong> Same hue, varying lightness / saturation — elegant and cohesive</li>
+          </ul>
+        </article>
+        <article class="guide-card">
+          <h3>WCAG 2.1 Contrast Ratio Calculation</h3>
+          <p>Contrast ratio is computed per the W3C WCAG 2.1 specification. We first convert each color to <strong>relative luminance</strong> using the sRGB linearization formula (gamma correction with a threshold at 0.03928), then apply:</p>
+          <code class="math-formula">Contrast Ratio = (L1 + 0.05) / (L2 + 0.05)</code>
+          <p>where L1 is the lighter color's luminance and L2 is the darker one's. The result is compared against four thresholds: AA Normal (4.5:1), AA Large Text (3:1), AAA Normal (7:1), and AAA Large (4.5:1). This ensures every color combination you use meets accessibility standards for real users, including those with visual impairments.</p>
+        </article>
+        <article class="guide-card">
+          <h3>Color Space Conversions — HEX ↔ RGB ↔ HSL ↔ HSV ↔ CMYK</h3>
+          <p>Different design contexts need different color formats. Our converter applies precise mathematical transforms:</p>
+          <ul>
+            <li><strong>HEX → RGB:</strong> Parse hex pairs and scale to 0–255</li>
+            <li><strong>RGB → HSL:</strong> Normalize to 0–1, find min/max channels, compute hue via atan2, lightness = (max+min)/2, saturation from chroma/lightness</li>
+            <li><strong>HSL → HSV:</strong> Convert through RGB as intermediary for accuracy</li>
+            <li><strong>RGB → CMYK:</strong> K = 1 − max(R,G,B); C = (1−R−K)/(1−K); apply for each channel</li>
+          </ul>
+          <p>All operations use floating-point precision and are validated against industry reference values.</p>
+        </article>
+        <article class="guide-card">
+          <h3>Export Formats Explained</h3>
+          <p>Once you've built the perfect palette, getting it into your project should be instant:</p>
+          <ul>
+            <li><strong>CSS Custom Properties:</strong> <code>--color-primary: #3B82F6;</code> — drop straight into your <code>:root</code></li>
+            <li><strong>SCSS Variables:</strong> <code>$color-primary: #3B82F6;</code> — plug into any Sass workflow</li>
+            <li><strong>JSON:</strong> Machine-readable structure — works with design tokens (Style Dictionary, Theo), React Native, or any custom pipeline</li>
+            <li><strong>Tailwind Config:</strong> Ready-to-paste <code>extend.colors</code> block for instant Tailwind integration</li>
+          </ul>
+        </article>
+        <article class="guide-card">
+          <h3>Why Color Matters in Design (and Why Tools Save Hours)</h3>
+          <p>Color communicates before words do. Studies show <strong>color increases brand recognition by up to 80%</strong> (University of Loyola) and influences over 85% of purchase decisions (Satyendra Singh, 2006). Yet color selection is one of the most time-consuming, subjective tasks designers face.</p>
+          <p>A structured tool removes the guesswork: instead of manually tweaking hex values and testing combinations, you extract directly from your brand's visual language, apply science-backed harmony rules, and validate accessibility — all in one workflow. What used to take hours of back-and-forth now takes under two minutes.</p>
+        </article>
+      </div>
+
+      <div class="faq-section-inner">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>How do I extract colors from an image?</summary>
+            <p>Click the "Choose Image" button or drag & drop any JPEG, PNG, GIF, or WebP file onto the upload area. Our tool processes the image entirely in your browser using the Canvas API — no data is ever sent to a server. Within seconds, you'll see the top dominant colors extracted and displayed as a palette with their HEX, RGB, and HSL values.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between complementary and analogous colors?</summary>
+            <p><strong>Complementary colors</strong> sit directly opposite each other on the color wheel (180° apart). They create maximum contrast and visual tension — great for call-to-action buttons or bold brand identities. <strong>Analogous colors</strong> are adjacent on the color wheel (within 30°). They feel naturally harmonious, calm, and cohesive — ideal for backgrounds, illustrations, and nature-inspired designs.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What is WCAG and why does contrast ratio matter?</summary>
+            <p>WCAG (Web Content Accessibility Guidelines) is the international standard for digital accessibility published by the W3C. The contrast ratio requirement ensures text is readable for users with visual impairments, including low vision or color blindness. A ratio of 4.5:1 is the minimum for normal text (AA level), and 7:1 is recommended for enhanced accessibility (AAA). Failing to meet these thresholds can make your site legally non-compliant in jurisdictions with accessibility laws (ADA, EN 301 549, etc.).</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use the extracted colors commercially?</summary>
+            <p>Yes. The colors themselves — mathematical descriptions of light — are not copyrightable. Any palette you create with this tool is yours to use freely in personal or commercial projects. However, be mindful that trademarked brand colors (like Tiffany Blue or UPS Brown) may have legal protections on their use in specific contexts.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How is this tool different from Adobe Color or Coolors?</summary>
+            <p>This tool combines image color extraction, scheme generation, WCAG contrast checking, live UI preview, and multi-format export in a single, completely free, no-account-required workflow. Adobe Color requires a Creative Cloud account for full features; Coolors doesn't offer WCAG checking or image extraction in its free tier. Our tool processes everything client-side for maximum privacy.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Does this work offline?</summary>
+            <p>All computation runs in your browser (JavaScript + Canvas API). Once the page is loaded, the image extraction, scheme generation, and contrast calculation features all work without an internet connection. Only the initial page load and Google Fonts require connectivity.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What formats can I export my color palette in?</summary>
+            <p>You can export your palette as: <strong>CSS Custom Properties</strong> (for web projects), <strong>SCSS Variables</strong> (for Sass workflows), <strong>JSON</strong> (for design token pipelines, React Native, or any programmatic use), and <strong>Tailwind CSS config</strong> (for Tailwind-based projects). Copy any format with a single click.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer-bottom">
+  <div class="container">
+    <div class="footer-bottom">
+      <p>© 2025 ColorPalette.tools — All processing is done client-side. No data is stored or transmitted.</p>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
